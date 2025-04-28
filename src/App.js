@@ -10,6 +10,7 @@ import Books from './pages/Books';
 import AddBook from './pages/AdBook';
 import EditBook from './pages/EditBook';
 import BorrowReturn from './pages/BorrowReturn';
+import BorrowHistory from './pages/BorrowHistory';
 
 function App() {
   return (
@@ -22,7 +23,9 @@ function App() {
         <Route path="/books" element={<Books />} />
         <Route path="/add-book" element={<AddBook />} />
         <Route path="/edit-book/:bookId" element={<EditBook />} />
-        <Route path="/borrow-return/:bookId" element={<BorrowReturn />} />
+        <Route path="/borrow-return/" element={<BorrowReturn />} />
+        <Route path="/borrow-history" element={<BorrowHistory />} />
+
         {/* Add more routes as needed */}
       </Routes>
     </Router>

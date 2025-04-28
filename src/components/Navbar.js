@@ -13,7 +13,7 @@ function Navbar() {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-black">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-black sticky-top">
       <div className="container">
         {/* Navbar Brand */}
         <Link className="navbar-brand pink-text" to="/">LMS</Link>

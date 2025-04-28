@@ -13,32 +13,56 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Check if token exists when app loads
-    const token = localStorage.getItem('access_token');
-    const storedUser = localStorage.getItem('user');
-
-    if (token && storedUser) {
-      const decoded = jwtDecode(token);
-
-      // If token is valid and hasn't expired, set authentication to true
-      if (decoded.exp * 1000 > Date.now()) {
-        setIsAuthenticated(true);
-        setUser(JSON.parse(storedUser));
-      } else {
-        setIsAuthenticated(false);
+    const checkAuth = async () => {
+      const token = localStorage.getItem('access_token');
+      const refreshToken = localStorage.getItem('refresh_token');
+      const storedUser = localStorage.getItem('user');
+  
+      if (token && storedUser) {
+        const decoded = jwtDecode(token);
+  
+        if (decoded.exp * 1000 > Date.now()) {
+          setIsAuthenticated(true);
+          setUser(JSON.parse(storedUser));
+        } else if (refreshToken) {
+          try {
+            const response = await fetch('http://localhost:8000/api/token/refresh/', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ refresh: refreshToken }),
+            });
+  
+            if (response.ok) {
+              const data = await response.json();
+              localStorage.setItem('access_token', data.access);
+              setIsAuthenticated(true);
+            } else {
+              logout();
+            }
+          } catch (error) {
+            logout();
+          }
+        } else {
+          logout();
+        }
       }
-    }
-  }, []);
+    };
+  
+    checkAuth();
+  }, []); 
 
-  // Login function (set authenticated true)
-  const login = (username, role, access_token) => {
+  // ✅ Login function (save access + refresh tokens)
+  const login = (username, role, access_token, refresh_token) => {
     setIsAuthenticated(true);
     setUser({ username, role });
     localStorage.setItem('access_token', access_token);
+    localStorage.setItem('refresh_token', refresh_token);
     localStorage.setItem('user', JSON.stringify({ username, role }));
   };
 
-  // Logout function (remove token and set authenticated false)
+  // ✅ Logout function
   const logout = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
@@ -47,8 +71,38 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  // ✅ New function to refresh access token
+  const refreshAccessToken = async () => {
+    try {
+      const refreshToken = localStorage.getItem('refresh_token');
+      if (!refreshToken) {
+        logout();
+        return;
+      }
+
+      const response = await fetch('http://localhost:8000/api/token/refresh/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refresh: refreshToken }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('access_token', data.access);
+        setIsAuthenticated(true);
+        return data.access;
+      } else {
+        logout();
+      }
+    } catch (error) {
+      logout();
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, refreshAccessToken }}>
       {children}
     </AuthContext.Provider>
   );
