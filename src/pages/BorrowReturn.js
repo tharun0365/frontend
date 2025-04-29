@@ -4,23 +4,24 @@ import { useAuth } from '../AuthContext';
 
 function BorrowReturn() {
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, loading } = useAuth();
   const [books, setBooks] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchBooks = async () => {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        navigate('/login');
-        return;
-      }
+    if (loading) return;
 
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+
+    const fetchBooks = async () => {
       try {
         const response = await fetch('http://localhost:8000/api/books/', {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
           },
         });
 
@@ -35,23 +36,20 @@ function BorrowReturn() {
       }
     };
 
-    if (isAuthenticated) {
-      fetchBooks();
-    }
-  }, [isAuthenticated, navigate]);
+    fetchBooks();
+  }, [isAuthenticated, loading, navigate]);
 
   const handleBorrow = async (bookId) => {
-    const token = localStorage.getItem('access_token');
     try {
       const response = await fetch(`http://localhost:8000/api/books/${bookId}/borrow-return/?action=borrow`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
         },
       });
 
       if (response.ok) {
-        window.location.reload(); // Reload to update book availability
+        window.location.reload();
       } else {
         throw new Error('Failed to borrow the book');
       }
@@ -61,17 +59,16 @@ function BorrowReturn() {
   };
 
   const handleReturn = async (bookId) => {
-    const token = localStorage.getItem('access_token');
     try {
       const response = await fetch(`http://localhost:8000/api/books/${bookId}/borrow-return/?action=return`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
         },
       });
 
       if (response.ok) {
-        window.location.reload(); // Reload to update book availability
+        window.location.reload();
       } else {
         throw new Error('Failed to return the book');
       }
@@ -80,44 +77,49 @@ function BorrowReturn() {
     }
   };
 
+  if (loading) {
+    return <div className="text-center mt-5">Loading...</div>;
+  }
+
   return (
     <div className="container mt-5">
       {error && <div className="alert alert-danger">{error}</div>}
 
       <div className="row">
-        {books.map((book) => (
-          <div key={book.id} className="col-md-3 mb-4">
-            <div className="card">
-              <img
-                src={book.image ? `http://localhost:8000/api${book.image}` : '/media/book_images/it_end_with_us.jpg'}
-                alt={book.title}
-                className="card-img-top"
-                // style={{ height: '200px', objectFit: 'cover' }}
-              />
-              <div className="card-body">
-                <h5 className="card-title">{book.title}</h5>
-                <p className="card-text">{book.description}</p>
+        {books.length === 0 ? (
+          <div className="col-12 text-center">
+            <p>No books available.</p>
+          </div>
+        ) : (
+          books.map((book) => (
+            <div key={book.id} className="col-md-3 mb-4">
+              <div className="card">
+                <img
+                  src={book.image ? `http://localhost:8000/api${book.image}` : '/media/book_images/it_end_with_us.jpg'}
+                  alt={book.title}
+                  className="card-img-top"
+                />
+                <div className="card-body d-flex flex-column">
+                  <h5 className="card-title">{book.title}</h5>
+                  <p className="card-text">{book.description}</p>
 
-                {/* Action Buttons */}
-                {book.available ? (
-                  <button className="btn btn-success btn-block" 
-                  onClick={() => handleBorrow(book.id)}>Borrow                  
-                  </button>
+                  {/* Action Buttons */}
+                  {book.available ? (
+                    <button className="btn btn-success w-100" onClick={() => handleBorrow(book.id)}>
+                      Borrow
+                    </button>
+                  ) : book.borrowed_by === user?.username ? (
+                    <button className="btn btn-warning w-100" onClick={() => handleReturn(book.id)}>
+                      Return
+                    </button>
                   ) : (
-                  <>
-                  {book.borrowed_by === user?.username ? (
-                  <button className="btn btn-success btn-block" 
-                  onClick={() => handleReturn(book.id)}>Return
-                  </button>
-                  ) : (
-                  <p>Not Available</p>
-                 )}
-                  </>
-                )}
+                    <p className="text-danger">Not Available</p>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );
