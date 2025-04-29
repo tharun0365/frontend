@@ -55,8 +55,8 @@ function BorrowHistory() {
           <tbody>
             {borrowHistory.map((borrow) => (
               <tr key={borrow.id}>
-                <td>{borrow.book.title}</td>
-                <td>{borrow.user.username}</td>
+                <td>{borrow.title}</td>
+                <td>{borrow.username}</td>
                 <td>{borrow.borrow_date}</td>
                 <td>{borrow.return_date ? borrow.return_date : 'Not Returned'}</td>
               </tr>
