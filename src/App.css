@@ -112,7 +112,15 @@ body {
   font-weight: bolder;
 }
 
+.bhtable{
+  background-color: pink !important;
+  color: black !important;
+}
 
+.table{
+  background-color: pink !important;
+  color: black !important;
+}
 
 
 

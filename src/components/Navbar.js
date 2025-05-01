@@ -37,10 +37,10 @@ function Navbar() {
               <Link className="nav-link pink-text" to="/borrow-return">Borrow & Return</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link pink-text" to="/borrow-history">Borrow History</Link>
+              <Link className="nav-link pink-text" to="/your-books">Your Books</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link pink-text" to="/your-books">Your Books</Link>
+              <Link className="nav-link pink-text" to="/borrow-history">Borrow History</Link>
             </li>
           </ul>
 

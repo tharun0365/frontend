@@ -46,7 +46,7 @@ function YourBooks() {
 
   return (
     <div className="container mt-5">
-      <h3>Your Borrowed Books</h3>
+
       {error && <div className="alert alert-danger">{error}</div>}
       <div className="row">
         {books.length === 0 ? (
@@ -67,7 +67,7 @@ function YourBooks() {
                   <p className="card-text">{book.description}</p>
                   <button
                     className="btn btn-primary w-100"
-                    onClick={() => handleRead(`http://localhost:8000${book.pdf}`)}
+                    onClick={() => handleRead(`http://localhost:8000/api${book.pdf}`)}
                   >
                     Read
                   </button>
