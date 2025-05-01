@@ -82,7 +82,7 @@ body {
 .registerButton{
   background-color: pink;
   border-radius: 5px;
-  width: 9%;
+  width: auto;
   height: 40px;
   font-size:medium;
   font-weight: bolder;
@@ -99,16 +99,16 @@ body {
 .logButton{
   background-color: pink;
   border-radius: 5px;
-  width: 9%;
+  width: auto;
   height: 40px;
-  font-size:medium;
+  font-size:auto;
   font-weight: bolder;
 }
 
 .logButton:hover {
   background-color: hotpink;
   color: white;
-  font-size:medium;
+  font-size:auto;
   font-weight: bolder;
 }
 

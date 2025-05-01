@@ -11,6 +11,7 @@ import AddBook from './pages/AdBook';
 import EditBook from './pages/EditBook';
 import BorrowReturn from './pages/BorrowReturn';
 import BorrowHistory from './pages/BorrowHistory';
+import YourBooks from './pages/YourBooks';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/edit-book/:bookId" element={<EditBook />} />
         <Route path="/borrow-return/" element={<BorrowReturn />} />
         <Route path="/borrow-history" element={<BorrowHistory />} />
+        <Route path="/your-books" element={<YourBooks />} />
 
         {/* Add more routes as needed */}
       </Routes>

@@ -19,7 +19,6 @@ function BorrowReturn() {
     const fetchBooks = async () => {
       try {
         const response = await fetch('http://localhost:8000/api/books/', {
-          method: 'GET',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
           },
@@ -77,9 +76,7 @@ function BorrowReturn() {
     }
   };
 
-  if (loading) {
-    return <div className="text-center mt-5">Loading...</div>;
-  }
+  if (loading) return <div className="text-center mt-5">Loading...</div>;
 
   return (
     <div className="container mt-5">
@@ -93,7 +90,7 @@ function BorrowReturn() {
         ) : (
           books.map((book) => (
             <div key={book.id} className="col-md-3 mb-4">
-              <div className="card">
+              <div className="card h-100">
                 <img
                   src={book.image ? `http://localhost:8000/api${book.image}` : '/media/book_images/it_end_with_us.jpg'}
                   alt={book.title}
@@ -102,18 +99,20 @@ function BorrowReturn() {
                 <div className="card-body d-flex flex-column">
                   <h5 className="card-title">{book.title}</h5>
                   <p className="card-text">{book.description}</p>
+                  <p><strong>Total Copies:</strong> {book.total_copies}</p>
+                  <p><strong>Available Copies:</strong> {book.available_copies}</p>
 
                   {/* Action Buttons */}
-                  {book.available ? (
-                    <button className="btn btn-success w-100" onClick={() => handleBorrow(book.id)}>
-                      Borrow
-                    </button>
-                  ) : book.borrowed_by === user?.username ? (
-                    <button className="btn btn-warning w-100" onClick={() => handleReturn(book.id)}>
+                  {book.borrowed_by === user?.username ? (
+                    <button className="btn btn-warning mt-auto" onClick={() => handleReturn(book.id)}>
                       Return
                     </button>
+                  ) : book.available_copies > 0 ? (
+                    <button className="btn btn-success mt-auto" onClick={() => handleBorrow(book.id)}>
+                      Borrow
+                    </button>
                   ) : (
-                    <p className="text-danger">Not Available</p>
+                    <p className="text-danger mt-auto">Not Available</p>
                   )}
                 </div>
               </div>

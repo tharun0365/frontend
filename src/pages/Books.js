@@ -97,7 +97,7 @@ function Books() {
 
                   {/* Librarian Controls */}
                   {user && user.role === 'librarian' && (
-                    <div className="mt-auto">
+                    <div className="mt-auto w-100">
                       <button
                         className="btn btn-warning w-100 me-2 mt-2"
                         onClick={() => navigate(`/edit-book/${book.id}`)}

@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 
 function BookHistory() {
+  const navigate = useNavigate();
   const { isAuthenticated, user, loading } = useAuth();
   const [history, setHistory] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (loading || !isAuthenticated || user?.role !== 'librarian') return;
+
+    if (loading) return;
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+
+    if (loading || user?.role !== 'librarian') return;
 
     const fetchHistory = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/books/', {
+        const response = await fetch('http://localhost:8000/api/borrow-history/', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
           },
@@ -29,13 +38,9 @@ function BookHistory() {
     };
 
     fetchHistory();
-  }, [isAuthenticated, loading, user]);
+  }, [isAuthenticated, loading, user, navigate]);
 
   if (loading) return <div className="text-center mt-5">Loading...</div>;
-
-  if (!isAuthenticated) {
-    return <div className="text-center mt-5 text-danger">You must be logged in to view this page.</div>;
-  }
 
   if (user?.role !== 'librarian') {
     return <div className="text-center mt-5 text-danger">You do not have permission to view this page. Only librarians can access it.</div>;
@@ -51,20 +56,22 @@ function BookHistory() {
             <p>No borrow history available.</p>
           </div>
         ) : (
-          history.map((book) => (
-            <div key={book.id} className="col-md-3 mb-4">
-              <div className="card">
+          history.map((record) => (
+            <div key={record.id} className="col-md-3 mb-4">
+              <div className="card h-100">
                 <img
-                  src={book.image ? `http://localhost:8000/api${book.image}` : '/media/book_images/it_end_with_us.jpg'}
-                  alt={book.title}
+                 src={record.book_image ? `http://localhost:8000/api${record.book_image}` : '/media/book_images/default.jpg'}
+                 alt={record.book_title || 'Unknown'}
                   className="card-img-top"
                 />
-                <div className="card-body">
-                  <h5 className="card-title">{book.title}</h5>
-                  <p className="card-text"><strong>Borrowed by:</strong> {book.borrowed_by || 'N/A'}</p>
-                  <p className="card-text"><strong>Borrowed on:</strong> {book.borrowed_on || 'N/A'}</p>
-                  <p className="card-text"><strong>Returned on:</strong> {book.returned_on || 'N/A'}</p>
-                  <p className="card-text"><strong>Status:</strong> {book.available ? 'Available' : 'Borrowed'}</p>
+                <div className="card-body d-flex flex-column">
+                  <h5 className="card-title">{record.book_title || 'Unknown'}</h5>
+                  <p className="card-text"><strong>Borrowed by:</strong> {record.username || 'N/A'}</p>
+                  <p className="card-text"><strong>Borrowed on:</strong> {record.borrow_date || 'N/A'}</p>
+                  <p className="card-text"><strong>Returned on:</strong> {record.return_date || 'N/A'}</p>
+                  <p className="card-text text-{record.returned_on ? 'success' : 'danger'}">
+                    <strong>Status:</strong> {record.returned_on ? 'Returned' : 'Currently Borrowed'}
+                  </p>
                 </div>
               </div>
             </div>

@@ -8,6 +8,8 @@ function AddBook() {
     author: '',
     isbn: '',
     image: null, // image is a file
+    available_copies: '',
+    total_copies: '',
   });
   const [error, setError] = useState(null);
 
@@ -25,6 +27,9 @@ function AddBook() {
     bookData.append('title', formData.title);
     bookData.append('author', formData.author);
     bookData.append('isbn', formData.isbn);
+    bookData.append(' available_copies', formData.available_copies);
+    bookData.append('total_copies', formData.total_copies);
+
     if (formData.image) {
       bookData.append('image', formData.image);
     }
@@ -72,6 +77,16 @@ function AddBook() {
         <div className="mb-3">
           <label className="form-label">Image</label>
           <input type="file" className="form-control" name="image" accept="image/*" onChange={handleChange} />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Available copies</label>
+          <input type="text" className="form-control" name="available_copies" required onChange={handleChange} />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Total copies</label>
+          <input type="text" className="form-control" name="total_copies" required  onChange={handleChange} />
         </div>
 
         <button type="submit" className="btn btn-success">Add Book</button>

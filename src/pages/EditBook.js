@@ -9,6 +9,9 @@ function EditBook() {
   const [author, setAuthor] = useState('');
   const [isbn, setIsbn] = useState('');
   const [image, setImage] = useState(null);
+  const [available_copies, setAvailable_Copies] = useState('');
+  const [total_copies, setTotal_Copies] = useState('');
+
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -18,6 +21,8 @@ function EditBook() {
       setTitle(data.title);
       setAuthor(data.author);
       setIsbn(data.isbn);
+      setAvailable_Copies(data.available_copies);
+      setTotal_Copies(data.total_copies);
     };
 
     fetchBook();
@@ -30,6 +35,9 @@ function EditBook() {
     formData.append('title', title);
     formData.append('author', author);
     formData.append('isbn', isbn);
+    formData.append('available_copies', available_copies);
+    formData.append('total_copies', total_copies);
+    
     if (image) formData.append('image', image);
 
     const token = localStorage.getItem('access_token');
@@ -97,6 +105,23 @@ function EditBook() {
             onChange={(e) => setImage(e.target.files[0])}
           />
         </div>
+        <div className="mb-3">
+          <label className="form-label">Available copies</label>
+          <input
+            type="text"
+            className="form-control"
+            onChange={(e) => setAvailable_Copies(e.target.value)}
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Total copies</label>
+          <input
+            type="text"
+            className="form-control"
+            onChange={(e) => setTotal_Copies(e.target.value)}
+          />
+        </div>
+
         <button type="submit" className="btn btn-primary">Update Book</button>
       </form>
     </div>

@@ -39,6 +39,9 @@ function Navbar() {
             <li className="nav-item">
               <Link className="nav-link pink-text" to="/borrow-history">Borrow History</Link>
             </li>
+            <li className="nav-item">
+              <Link className="nav-link pink-text" to="/your-books">Your Books</Link>
+            </li>
           </ul>
 
           {/* Right Side Buttons */}
